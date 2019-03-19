@@ -7,6 +7,9 @@
 	Authors: M. Yarrow
 	C. Kuszmaul
 
+	STL version:
+	Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>
+	
 	CPP and OpenMP version:
 			Dalvan Griebler <dalvangriebler@gmail.com>
 			Júnior Löff <loffjh@gmail.com>
@@ -38,7 +41,7 @@ c---------------------------------------------------------------------
 #include "npbparams.hpp"
 #include "npb-CPP.hpp"
 
-#include "../common/mystl.h"
+//#include "../common/mystl.h"
 
 #define	NZ	NA*(NONZER+1)*(NONZER+1)+NA*(NONZER+2)
 
@@ -133,8 +136,9 @@ int main(int argc, char **argv)
 		class_npb = 'U';
 	}
 
-	printf("\n\n NAS Parallel Benchmarks 4.0 OpenMP C++STL_array version"" - CG Benchmark\n");
+	printf("\n\n NAS Parallel Benchmarks 4.0 OpenMP C++STL_array_OMP version"" - CG Benchmark\n");
 	printf("\n\n Developed by: Dalvan Griebler <dalvan.griebler@acad.pucrs.br>\n");
+	printf("\n\n STL version by: Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>\n");
 	printf(" Size: %10d\n", NA);
 	printf(" Iterations: %5d\n", NITER);
 
@@ -212,8 +216,8 @@ int main(int argc, char **argv)
 		c  So, first: (z.z)
 		c-------------------------------------------------------------------*/
 		
-		norm_temp11 = mystd::transform_reduce(pstl::execution::par, &x[1], &x[lastcol-firstcol+2], &z[1], 0.0);
-		norm_temp12 = mystd::transform_reduce(pstl::execution::par, &z[1], &z[lastcol-firstcol+2], &z[1], 0.0);
+		norm_temp11 = std::transform_reduce(pstl::execution::par, &x[1], &x[lastcol-firstcol+2], &z[1], 0.0);
+		norm_temp12 = std::transform_reduce(pstl::execution::par, &z[1], &z[lastcol-firstcol+2], &z[1], 0.0);
 		
 		
 		norm_temp12 = 1.0 / sqrt( norm_temp12 );
@@ -222,7 +226,7 @@ int main(int argc, char **argv)
 		c  Normalize z to obtain x
 		c-------------------------------------------------------------------*/
 		
-		mystd::transform(pstl::execution::par, &z[1], &z[lastcol-firstcol + 2], &x[1], [norm_temp12](double z) -> double {return norm_temp12*z;});
+		std::transform(pstl::execution::par, &z[1], &z[lastcol-firstcol + 2], &x[1], [norm_temp12](double z) -> double {return norm_temp12*z;});
 		
 	} /* end of do one iteration untimed */
 
@@ -240,7 +244,7 @@ int main(int argc, char **argv)
 
 	timer_clear( 1 );
 	timer_clear( 2 );
-	mystd::clear();
+	//std::clear();
 	
 	timer_start( 1 );
 	
@@ -267,8 +271,8 @@ int main(int argc, char **argv)
 
 		if(TIMER_ENABLED == TRUE) timer_start(2);
 		
-		norm_temp11 = mystd::transform_reduce(pstl::execution::par, &x[1], &x[lastcol-firstcol+2], &z[1], 0.0);
-		norm_temp12 = mystd::transform_reduce(pstl::execution::par, &z[1], &z[lastcol-firstcol+2], &z[1], 0.0);
+		norm_temp11 = std::transform_reduce(pstl::execution::par, &x[1], &x[lastcol-firstcol+2], &z[1], 0.0);
+		norm_temp12 = std::transform_reduce(pstl::execution::par, &z[1], &z[lastcol-firstcol+2], &z[1], 0.0);
 		
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		
@@ -292,7 +296,7 @@ int main(int argc, char **argv)
 
 		if(TIMER_ENABLED == TRUE) timer_start(2);
 		
-		mystd::transform(pstl::execution::par, &z[1], &z[lastcol-firstcol + 2], &x[1], [norm_temp12](double z) -> double {return norm_temp12*z;});
+		std::transform(pstl::execution::par, &z[1], &z[lastcol-firstcol + 2], &x[1], [norm_temp12](double z) -> double {return norm_temp12*z;});
 		
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		
@@ -338,8 +342,8 @@ int main(int argc, char **argv)
 	c_print_results((char*)"CG", class_npb, NA, 0, 0, NITER, nthreads, t, mflops, (char*)"          floating point", verified, (char*)NPBVERSION, (char*)COMPILETIME, (char*)CS1, (char*)CS2, (char*)CS3, (char*)CS4, (char*)CS5, (char*)CS6, (char*)CS7);
 	if(TIMER_ENABLED == TRUE) printf(" time spent in STL: %15.3f seconds\n", timer_read(2));
 	
-	printf("\n mystl statistics:\n");
-	mystd::dump();
+	//printf("\n mystl statistics:\n");
+	//std::dump();
 
 	return 0;
 }
@@ -379,12 +383,12 @@ c---------------------------------------------------------------------*/
 	
 	if(TIMER_ENABLED == TRUE) timer_start(2);
 	
-	mystd::fill(pstl::execution::par, &q[1], &q[naa + 2], 0.0);
-	mystd::fill(pstl::execution::par, &z[1], &z[naa + 2], 0.0);
-	mystd::fill(pstl::execution::par, &w[1], &w[naa + 2], 0.0);
+	std::fill(pstl::execution::par, &q[1], &q[naa + 2], 0.0);
+	std::fill(pstl::execution::par, &z[1], &z[naa + 2], 0.0);
+	std::fill(pstl::execution::par, &w[1], &w[naa + 2], 0.0);
 	
-	mystd::copy(pstl::execution::par, &x[1], &x[naa + 2], &r[1]);
-	mystd::copy(pstl::execution::par, &r[1], &r[naa + 2], &p[1]);
+	std::copy(pstl::execution::par, &x[1], &x[naa + 2], &r[1]);
+	std::copy(pstl::execution::par, &r[1], &r[naa + 2], &p[1]);
 	
 	if(TIMER_ENABLED == TRUE) timer_stop(2);
 	
@@ -395,7 +399,7 @@ c---------------------------------------------------------------------*/
 	
 	if(TIMER_ENABLED == TRUE) timer_start(2);
 	
-	rho = mystd::transform_reduce(pstl::execution::par, &r[1], &r[lastcol-firstcol+2], &r[1], 0.0);
+	rho = std::transform_reduce(pstl::execution::par, &r[1], &r[lastcol-firstcol+2], &r[1], 0.0);
 	
 	if(TIMER_ENABLED == TRUE) timer_stop(2);
 	
@@ -436,7 +440,7 @@ c---------------------------------------------------------------------*/
 		
 		if(TIMER_ENABLED == TRUE) timer_start(2);
 		
-		mystd::for_each(pstl::execution::par, &v[0], &v[lastrow-firstrow+1], [&rowstr, &a, &p, &colidx, &w](int j)
+		std::for_each(pstl::execution::par, &v[0], &v[lastrow-firstrow+1], [&rowstr, &a, &p, &colidx, &w](int j)
 		{
 			double sum = 0.0;
 			for (int k = rowstr[j]; k < rowstr[j+1]; k++) {
@@ -491,21 +495,21 @@ c---------------------------------------------------------------------*/
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		
 		if(TIMER_ENABLED == TRUE) timer_start(2);
-		mystd::copy(pstl::execution::par, &w[1], &w[lastcol-firstcol + 2], &q[1]);
+		std::copy(pstl::execution::par, &w[1], &w[lastcol-firstcol + 2], &q[1]);
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		/*--------------------------------------------------------------------
 		c  Clear w for reuse...
 		c-------------------------------------------------------------------*/
 		
 		if(TIMER_ENABLED == TRUE) timer_start(2);
-		mystd::fill(pstl::execution::par, &w[1], &w[lastcol-firstcol + 2], 0.0);
+		std::fill(pstl::execution::par, &w[1], &w[lastcol-firstcol + 2], 0.0);
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		/*--------------------------------------------------------------------
 		c  Obtain p.q
 		c-------------------------------------------------------------------*/
 		
 		if(TIMER_ENABLED == TRUE) timer_start(2);
-		d = mystd::transform_reduce(pstl::execution::par, &p[1], &p[lastcol-firstcol+2], &q[1], 0.0);
+		d = std::transform_reduce(pstl::execution::par, &p[1], &p[lastcol-firstcol+2], &q[1], 0.0);
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		/*--------------------------------------------------------------------
 		c  Obtain alpha = rho / (p.q)
@@ -524,8 +528,8 @@ c---------------------------------------------------------------------*/
 		c---------------------------------------------------------------------*/
 		
 		if(TIMER_ENABLED == TRUE) timer_start(2);
-		mystd::transform(pstl::execution::par, &p[1], &p[lastcol-firstcol + 2], &z[1], &z[1], [alpha](double p, double z) -> double {return z + alpha*p;});
-		mystd::transform(pstl::execution::par, &q[1], &q[lastcol-firstcol + 2], &r[1], &r[1], [alpha](double q, double r) -> double {return r - alpha*q;});
+		std::transform(pstl::execution::par, &p[1], &p[lastcol-firstcol + 2], &z[1], &z[1], [alpha](double p, double z) -> double {return z + alpha*p;});
+		std::transform(pstl::execution::par, &q[1], &q[lastcol-firstcol + 2], &r[1], &r[1], [alpha](double q, double r) -> double {return r - alpha*q;});
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		/*---------------------------------------------------------------------
 		c  rho = r.r
@@ -533,7 +537,7 @@ c---------------------------------------------------------------------*/
 		c---------------------------------------------------------------------*/
 		
 		if(TIMER_ENABLED == TRUE) timer_start(2);
-		rho = mystd::transform_reduce(pstl::execution::par, &r[1], &r[lastcol-firstcol+2], &r[1], 0.0);
+		rho = std::transform_reduce(pstl::execution::par, &r[1], &r[lastcol-firstcol+2], &r[1], 0.0);
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 		/*--------------------------------------------------------------------
 		c  Obtain beta:
@@ -546,7 +550,7 @@ c---------------------------------------------------------------------*/
 		c-------------------------------------------------------------------*/
 		
 		if(TIMER_ENABLED == TRUE) timer_start(2);
-		mystd::transform(pstl::execution::par, &p[1], &p[lastcol-firstcol + 2], &r[1], &p[1], [beta](double p, double r) -> double {return r + beta*p;});
+		std::transform(pstl::execution::par, &p[1], &p[lastcol-firstcol + 2], &r[1], &p[1], [beta](double p, double r) -> double {return r + beta*p;});
 		if(TIMER_ENABLED == TRUE) timer_stop(2);
 	} /* end of do cgit=1,cgitmax */
 	
@@ -558,7 +562,7 @@ c---------------------------------------------------------------------*/
 	
 	sum = 0.0;
 	if(TIMER_ENABLED == TRUE) timer_start(2);
-	mystd::for_each(pstl::execution::par, &v[0], &v[lastrow-firstrow+1], [&rowstr, &a, &z, &colidx, &w](int j)
+	std::for_each(pstl::execution::par, &v[0], &v[lastrow-firstrow+1], [&rowstr, &a, &z, &colidx, &w](int j)
 	{
 		double d = 0.0;
 		for (int k = rowstr[j]; k <= rowstr[j+1]-1; k++) {
@@ -569,13 +573,13 @@ c---------------------------------------------------------------------*/
 	if(TIMER_ENABLED == TRUE) timer_stop(2);
 	
 	if(TIMER_ENABLED == TRUE) timer_start(2);
-	mystd::copy(pstl::execution::par, &w[1], &w[lastcol-firstcol + 2], &r[1]);
+	std::copy(pstl::execution::par, &w[1], &w[lastcol-firstcol + 2], &r[1]);
 	if(TIMER_ENABLED == TRUE) timer_stop(2);
 	/*--------------------------------------------------------------------
 	c  At this point, r contains A.z
 	c-------------------------------------------------------------------*/
 	if(TIMER_ENABLED == TRUE) timer_start(2);
-	sum = mystd::transform_reduce(pstl::execution::par, &x[1], &x[lastcol-firstcol + 2], &r[1], 0.0, std::plus<double>(), [](double x1, double x2) -> double {return (x1-x2)*(x1-x2);});
+	sum = std::transform_reduce(pstl::execution::par, &x[1], &x[lastcol-firstcol + 2], &r[1], 0.0, std::plus<double>(), [](double x1, double x2) -> double {return (x1-x2)*(x1-x2);});
 	if(TIMER_ENABLED == TRUE) timer_stop(2);
 	
 	(*rnorm) = sqrt(sum);

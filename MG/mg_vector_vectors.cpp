@@ -9,6 +9,9 @@
 		 A. Woo
 		 M. Yarrow
 
+	STL version:
+	Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>
+	
 	CPP and OpenMP version:
 			Dalvan Griebler <dalvangriebler@gmail.com>
 			Júnior Löff <loffjh@gmail.com>
@@ -112,6 +115,7 @@ int main(int argc, char *argv[]) {
 	
 	printf("\n\n NAS Parallel Benchmarks 4.0 OpenMP C++STL_vector version" " - MG Benchmark\n\n");
 	printf("\n\n Developed by: Dalvan Griebler <dalvan.griebler@acad.pucrs.br>\n");
+	printf("\n\n STL version by: Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>\n");
 	
 	fp = fopen("mg.input", "r");
 	if (fp != NULL) {

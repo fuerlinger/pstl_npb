@@ -8,6 +8,9 @@
 	   D. H. Bailey
 	   A. C. Woo
 
+	STL version:
+	Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>
+	
 	CPP and OpenMP version:
 	Dalvan Griebler <dalvangriebler@gmail.com>
 	Júnior Löff <loffjh@gmail.com>
@@ -30,7 +33,7 @@
 #include <iostream>
 #include <../common/npb-CPP.hpp>
 
-#include "../common/mystl.h"
+//#include "../common/mystl.h"
 
 /* parameters */
 #define	MK		16
@@ -52,7 +55,7 @@ static double an_new;
 
 
 //-------------------------------SCHLECHTER STIL---------------------------
-
+/*
 class EP_Result
 {
 	public:
@@ -155,7 +158,7 @@ EP_Result addEP(EP_Result a, EP_Result b)
 	return EP_Result(a.sx + b.sx, a.sy + b.sy, q_new);
 }
 
-
+*/
 
 /*--------------------------------------------------------------------
     program EMBAR
@@ -197,6 +200,7 @@ int main(int argc, char **argv) {
 	
 	printf("\n\n NAS Parallel Benchmarks 4.0 OpenMP C++STL_array version"" - EP Benchmark\n");
 	printf("\n\n Developed by: Dalvan Griebler <dalvan.griebler@acad.pucrs.br>\n");
+	printf("\n\n STL version by: Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>\n");
 	sprintf(size, "%12.0f", pow(2.0, M+1));
 	for (j = 13; j >= 1; j--) {
 		if (size[j] == '.') size[j] = ' ';
@@ -293,7 +297,7 @@ int main(int argc, char **argv) {
 	int v[np];
 	std::iota(&v[0], &v[np], 1);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[np], [&an, &sx, &sy, &k_offset, &my_m](int k)
+	std::for_each(pstl::execution::par, &v[0], &v[np], [&an, &sx, &sy, &k_offset, &my_m](int k)
 	{
 		double t1, t2, t3, t4, x1, x2;
 		int kk, i, ik, l;
@@ -425,8 +429,8 @@ int main(int argc, char **argv) {
 		printf("Time in STL:	%f\n", timer_read(4));
 	}
 
-	printf("\n mystl statistics:\n");
-	mystd::dump();
+	//printf("\n mystl statistics:\n");
+	//std::dump();
 
 	return 0;
 }

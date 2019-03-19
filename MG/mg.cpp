@@ -9,6 +9,9 @@
 		A. Woo
 		M. Yarrow
 
+	STL version:
+	Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>
+	
 	CPP and OpenMP version:
 			Dalvan Griebler <dalvangriebler@gmail.com>
 			Júnior Löff <loffjh@gmail.com>
@@ -25,7 +28,7 @@
 #include <numeric>
 #include <tbb/task_scheduler_init.h>
 
-#include "../common/mystl.h"
+//#include "../common/mystl.h"
 
 #include <iostream>
 #include "npb-CPP.hpp"
@@ -113,6 +116,7 @@ int main(int argc, char *argv[]) {
 	
 	printf("\n\n NAS Parallel Benchmarks 4.0 OpenMP C++STL_array version" " - MG Benchmark\n\n");
 	printf("\n\n Developed by: Dalvan Griebler <dalvan.griebler@acad.pucrs.br>\n");
+	printf("\n\n STL version by: Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>\n");
 	
 	fp = fopen("mg.input", "r");
 	if (fp != NULL) {
@@ -271,7 +275,7 @@ int main(int argc, char *argv[]) {
 	
 	timer_clear(T_STL);
 	
-	mystd::clear();
+	//std::clear();
 	
 	timer_start(T_BENCH);
 	
@@ -337,8 +341,8 @@ int main(int argc, char *argv[]) {
 			verified, (char*)NPBVERSION, (char*)COMPILETIME, (char*)CS1, (char*)CS2, (char*)CS3, (char*)CS4, (char*)CS5, (char*)CS6, (char*)CS7);
 	if(TIMERS_ENABLED == TRUE) printf(" time spent in STL: %15.3f seconds\n", timer_read(T_STL));
 
-	printf("\n mystl statistics:\n");
-	mystd::dump();
+	//printf("\n mystl statistics:\n");
+	//std::dump();
 
 	return 0;
 }
@@ -462,7 +466,7 @@ static void psinv( double ***r, double ***u, int n1, int n2, int n3, double c[4]
 	int v[n3-2];
 	std::iota(&v[0], &v[n3-2], 1);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[n3-2], [&r, &u, &n1, &n2, &c](int i3)
+	std::for_each(pstl::execution::par, &v[0], &v[n3-2], [&r, &u, &n1, &n2, &c](int i3)
 	{
 		double r1[M], r2[M];
 		for (int i2 = 1; i2 < n2-1; i2++) {
@@ -482,7 +486,7 @@ static void psinv( double ***r, double ***u, int n1, int n2, int n3, double c[4]
 				//c-------------------------------------------------------------------
 			}
 		}
-	}, "psinv");
+	});//, "psinv");
 	
 	if(TIMERS_ENABLED == TRUE) timer_stop(T_STL);
 	
@@ -526,7 +530,7 @@ static void resid( double ***u, double ***v, double ***r, int n1, int n2, int n3
 	int c[n3-2];
 	std::iota(&c[0], &c[n3-2], 1);
 	
-	mystd::for_each(pstl::execution::par, &c[0], &c[n3-2], [&u, &v, &r, &n1, &n2, &a](int i3)
+	std::for_each(pstl::execution::par, &c[0], &c[n3-2], [&u, &v, &r, &n1, &n2, &a](int i3)
 	{
 		double u1[M], u2[M];
 		for (int i2 = 1; i2 < n2-1; i2++) {
@@ -547,7 +551,7 @@ static void resid( double ***u, double ***v, double ***r, int n1, int n2, int n3
 				 - a[3] * ( u2[i1-1] + u2[i1+1] );
 			}
 		}
-	}, "resid");
+	});//, "resid");
 	
 	if(TIMERS_ENABLED == TRUE) timer_stop(T_STL);
 	
@@ -608,7 +612,7 @@ static void rprj3( double ***r, int m1k, int m2k, int m3k, double ***s, int m1j,
 	int v[m3j-2];
 	std::iota(&v[0], &v[m3j-2], 1);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[m3j-2], [&r, &s, &m1j, &m2j, &d1, &d2, &d3](int j3)
+	std::for_each(pstl::execution::par, &v[0], &v[m3j-2], [&r, &s, &m1j, &m2j, &d1, &d2, &d3](int j3)
 	{
 		int j2, j1, i3, i2, i1;
 		double x1[M], y1[M], x2, y2;
@@ -638,7 +642,7 @@ static void rprj3( double ***r, int m1k, int m2k, int m3k, double ***s, int m1j,
 					+ 0.0625 * ( y1[i1] + y1[i1+2] );
 			}
 		}
-	}, "rprj3");
+	});//, "rprj3");
 	
 	if(TIMERS_ENABLED == TRUE) timer_stop(T_STL);
 	
@@ -688,7 +692,7 @@ static void interp( double ***z, int mm1, int mm2, int mm3, double ***u, int n1,
 		int v[mm3-1];
 		std::iota(&v[0], &v[mm3-1], 0);
 		
-		mystd::for_each(pstl::execution::par, &v[0], &v[mm3-1], [&z, &u, &mm1, &mm2](int i3)
+		std::for_each(pstl::execution::par, &v[0], &v[mm3-1], [&z, &u, &mm1, &mm2](int i3)
 		{
 			double z1[M], z2[M], z3[M];
 			
@@ -715,7 +719,7 @@ static void interp( double ***z, int mm1, int mm2, int mm3, double ***u, int n1,
 					u[2*i3+1][2*i2+1][2*i1+1] = u[2*i3+1][2*i2+1][2*i1+1] + 0.125*( z3[i1] + z3[i1+1] );
 				}
 			}
-		}, "interp");
+		});//, "interp");
 		
 		if(TIMERS_ENABLED == TRUE) timer_stop(T_STL);
 		
@@ -747,7 +751,7 @@ static void interp( double ***z, int mm1, int mm2, int mm3, double ***u, int n1,
 		int v1[mm3-d3];
 		std::iota(&v1[0], &v1[mm3-d3], d3);
 		
-		mystd::for_each(pstl::execution::par, &v1[0], &v1[mm3-d3], [&z, &u, &d1, &d2, &d3, &t1, &t2, &t3, &mm1, &mm2](int i3)
+		std::for_each(pstl::execution::par, &v1[0], &v1[mm3-d3], [&z, &u, &d1, &d2, &d3, &t1, &t2, &t3, &mm1, &mm2](int i3)
 		{
 			for (int i2 = d2; i2 <= mm2-1; i2++) {
 				for (int i1 = d1; i1 <= mm1-1; i1++) {
@@ -773,12 +777,12 @@ static void interp( double ***z, int mm1, int mm2, int mm3, double ***u, int n1,
 					+0.25*(z[i3-1][i2][i1]+z[i3-1][i2-1][i1] + z[i3-1][i2][i1-1]+z[i3-1][i2-1][i1-1]);
 				}
 			}
-		}, "interp");
+		});//, "interp");
 		
 		int v2[mm3];
 		std::iota(&v2[0], &v2[mm3], 1);
 		
-		mystd::for_each(pstl::execution::par, &v2[0], &v2[mm3], [&z, &u, &d1, &d2, &d3, &t1, &t2, &t3, &mm1, &mm2](int i3)
+		std::for_each(pstl::execution::par, &v2[0], &v2[mm3], [&z, &u, &d1, &d2, &d3, &t1, &t2, &t3, &mm1, &mm2](int i3)
 		{
 			for (int i2 = d2; i2 <= mm2-1; i2++) {
 				for (int i1 = d1; i1 <= mm1-1; i1++) {
@@ -807,7 +811,7 @@ static void interp( double ***z, int mm1, int mm2, int mm3, double ***u, int n1,
 						+z[i3-1][i2][i1-1]+z[i3-1][i2-1][i1-1]);
 				}
 			}
-		}, "interp");
+		});//, "interp");
 		
 		if(TIMERS_ENABLED == TRUE) timer_stop(T_STL);
 	}
@@ -850,7 +854,7 @@ static void norm2u3(double ***r, int n1, int n2, int n3, double *rnm2, double *r
 	//this is option 1
 	std::pair<double, double> p = std::make_pair (0.0,0.0);
 	
-	p = mystd::transform_reduce(pstl::execution::par, &r[1], &r[n3-1], p,
+	p = std::transform_reduce(pstl::execution::par, &r[1], &r[n3-1], p,
 	[](std::pair<double, double> p1, std::pair<double, double> p2) -> std::pair<double, double>{
 		return std::make_pair (p1.first + p2.first, max(p1.second, p2.second));
 	}, [&n1, &n2](double **r) -> std::pair<double, double>{
@@ -881,7 +885,7 @@ static void norm2u3(double ***r, int n1, int n2, int n3, double *rnm2, double *r
 	int v[n3-2];
 	std::iota(&v[0], &v[n3-2], 1);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[n3-2], [&r, &n1, &n2, &p_a, &p_s, &my_m](int i3)
+	std::for_each(pstl::execution::par, &v[0], &v[n3-2], [&r, &n1, &n2, &p_a, &p_s, &my_m](int i3)
 	{
 		double p_s_tbb = 0.0, p_a_tbb = 0.0;
 		double tmp;
@@ -957,13 +961,13 @@ static void comm3(double ***u, int n1, int n2, int n3) {
 		}
 	});
 	*/
-	mystd::for_each(pstl::execution::par, &u[1], &u[n3-1], [&n2, &n1](double **u)
+	std::for_each(pstl::execution::par, &u[1], &u[n3-1], [&n2, &n1](double **u)
 	{
 		for (int i2 = 1; i2 < n2-1; i2++) {
 			u[i2][n1-1] = u[i2][1];
 			u[i2][0] = u[i2][n1-2];
 		}
-	}, "comm3");
+	});//, "comm3");
 	
 	// axis = 2
 	/*
@@ -975,26 +979,26 @@ static void comm3(double ***u, int n1, int n2, int n3) {
 		}
 	});*/
 	
-	mystd::for_each(pstl::execution::par, &u[1], &u[n3-1], [&n2, &n1](double **u)
+	std::for_each(pstl::execution::par, &u[1], &u[n3-1], [&n2, &n1](double **u)
 	{
 		for (int i1 = 0; i1 < n1; i1++) {
 			u[n2-1][i1] = u[1][i1];
 			u[0][i1] = u[n2-2][i1];
 		}
-	}, "comm3");
+	});//, "comm3");
 	
 	int v2[n2];
 	std::iota(&v2[0], &v2[n2], 0);
 	
 	// axis = 3
 	
-	mystd::for_each(pstl::execution::par, &v2[0], &v2[n2], [&u, &n3, &n1](int i2)
+	std::for_each(pstl::execution::par, &v2[0], &v2[n2], [&u, &n3, &n1](int i2)
 	{
 		for (int i1 = 0; i1 < n1; i1++) {
 			u[n3-1][i2][i1] = u[1][i2][i1];
 			u[0][i2][i1] = u[n3-2][i2][i1];
 		}
-	}, "comm3");
+	});//, "comm3");
 	
 	if(TIMERS_ENABLED == TRUE) timer_stop(T_STL);
 }
@@ -1305,14 +1309,14 @@ static void zero3(double ***z, int n1, int n2, int n3) {
 	if(TIMERS_ENABLED == TRUE) timer_start(T_STL);
 	
 	
-	mystd::for_each(pstl::execution::par, &z[0], &z[n3], [&n1, &n2](double **z)
+	std::for_each(pstl::execution::par, &z[0], &z[n3], [&n1, &n2](double **z)
 	{
 		for (int i2 = 0; i2 < n2; i2++) {
 			for (int i1 = 0; i1 < n1; i1++) {
 				z[i2][i1] = 0.0;
 			}
 		}
-	}, "zero3");
+	});//, "zero3");
 	
 	
 	/*

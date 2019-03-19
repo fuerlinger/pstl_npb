@@ -7,6 +7,9 @@
 	Authors: D. Bailey
 		 W. Saphir
 
+	STL version:
+	Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>
+	
 	CPP and OpenMP version:
 			Dalvan Griebler <dalvangriebler@gmail.com>
 			Júnior Löff <loffjh@gmail.com>
@@ -26,7 +29,7 @@
 #include <iostream>
 #include "npb-CPP.hpp"
 
-#include "../common/mystl.h"
+//#include "../common/mystl.h"
 
 /* global variables */
 #include "global.hpp"
@@ -127,7 +130,7 @@ int main(int argc, char **argv) {
 		timer_clear(i);
 	}
 	
-	mystd::clear();
+	//std::clear();
 	
 	timer_start(T_TOTAL);
 	if (TIMERS_ENABLED == TRUE) timer_start(T_SETUP);
@@ -200,8 +203,8 @@ int main(int argc, char **argv) {
 	(char*)NPBVERSION, (char*)COMPILETIME, (char*)CS1, (char*)CS2, (char*)CS3, (char*)CS4, (char*)CS5, (char*)CS6, (char*)CS7);
 	if (TIMERS_ENABLED == TRUE) print_timers();
 	
-	printf("\n mystl statistics:\n");
-	mystd::dump();
+	//printf("\n mystl statistics:\n");
+	//std::dump();
 
 	return 0;
 }
@@ -223,13 +226,13 @@ static void evolve(dcomplex u0[NZ][NY][NX], dcomplex u1[NZ][NY][NX], int t, int 
 	int v[dims[0][2]];
 	std::iota(&v[0], &v[dims[0][2]], 0);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[dims[0][2]], [&u0, &u1 , &t, &indexmap] (int k) {
+	std::for_each(pstl::execution::par, &v[0], &v[dims[0][2]], [&u0, &u1 , &t, &indexmap] (int k) {
 		for (int j = 0; j < dims[0][1]; j++) {
 			for (int i = 0; i < NX; i++) {
 				crmul(u1[k][j][i], u0[k][j][i], ex[t*indexmap[k][j][i]]);
 			}
 		}
-	}, "evolve");
+	});//, "evolve");
 	if (TIMERS_ENABLED == TRUE) timer_stop(T_MAX);
 }
 
@@ -274,7 +277,7 @@ static void compute_initial_conditions(dcomplex u0[NZ][NY][NX]) {
 	int v[dims[0][2]];
 	std::iota(&v[0], &v[dims[0][2]], 0);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[dims[0][2]], [&u0, &starts] (int k)
+	std::for_each(pstl::execution::par, &v[0], &v[dims[0][2]], [&u0, &starts] (int k)
 	{
 		double * tmp = new double[NX*2*MAXDIM+1];
 		
@@ -289,7 +292,7 @@ static void compute_initial_conditions(dcomplex u0[NZ][NY][NX]) {
 			}
 			//if (k != dims[0][2]) /*dummy = */randlc(&start, an);
 		}
-	}, "compute initial conditions");
+	});//, "compute initial conditions");
 	if (TIMERS_ENABLED == TRUE) timer_stop(T_MAX);
 }
 
@@ -347,6 +350,7 @@ static void setup(void) {
 	
 	printf("\n\n NAS Parallel Benchmarks 4.0 OpenMP C++STL_array version" " - FT Benchmark\n\n");
 	printf("\n\n Developed by: Dalvan Griebler <dalvan.griebler@acad.pucrs.br>\n");
+	printf("\n\n STL version by: Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>\n");
 	
 	niter = NITER_DEFAULT;
 	
@@ -425,7 +429,7 @@ static void compute_indexmap(int indexmap[NZ][NY][NX]) {
 	int v[dims[2][0]];
 	std::iota(&v[0], &v[dims[2][0]], 0);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[dims[2][0]], [&indexmap](int i)
+	std::for_each(pstl::execution::par, &v[0], &v[dims[2][0]], [&indexmap](int i)
 	{
 		int ii =  (i+1+xstart[2]-2+NX/2)%NX - NX/2;
 		int ii2 = ii*ii;
@@ -437,7 +441,7 @@ static void compute_indexmap(int indexmap[NZ][NY][NX]) {
 				indexmap[k][j][i] = kk*kk+ij2;
 			}
 		}
-	}, "compute indexmaps");
+	});//, "compute indexmaps");
 	
 	if (TIMERS_ENABLED == TRUE) timer_stop(T_MAX);
 	
@@ -523,7 +527,7 @@ static void cffts1(int is, int d[3], dcomplex x[NZ][NY][NX], dcomplex xout[NZ][N
 	int v[d[2]];
 	std::iota(&v[0], &v[d[2]], 0);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[d[2]], [&is, &d, &logd, &x, &xout](int k)
+	std::for_each(pstl::execution::par, &v[0], &v[d[2]], [&is, &d, &logd, &x, &xout](int k)
 	{
 		dcomplex y0[NX][FFTBLOCKPAD];
 		dcomplex y1[NX][FFTBLOCKPAD];
@@ -549,7 +553,7 @@ static void cffts1(int is, int d[3], dcomplex x[NZ][NY][NX], dcomplex xout[NZ][N
 				}
 			//	if (TIMERS_ENABLED == TRUE) timer_stop(T_FFTCOPY);
 			}
-	}, "Fourier Transform");
+	});//, "Fourier Transform");
 	if (TIMERS_ENABLED == TRUE) timer_stop(T_MAX);
 }
 
@@ -572,7 +576,7 @@ static void cffts2(int is, int d[3], dcomplex x[NZ][NY][NX],dcomplex xout[NZ][NY
 	int v[d[2]];
 	std::iota(&v[0], &v[d[2]], 0);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[d[2]], [&is, &d, &logd, &x, &xout](int k)
+	std::for_each(pstl::execution::par, &v[0], &v[d[2]], [&is, &d, &logd, &x, &xout](int k)
 	{
 		dcomplex y0[NX][FFTBLOCKPAD];
 		dcomplex y1[NX][FFTBLOCKPAD];
@@ -598,7 +602,7 @@ static void cffts2(int is, int d[3], dcomplex x[NZ][NY][NX],dcomplex xout[NZ][NY
 			}
 		//	if (TIMERS_ENABLED == TRUE) timer_stop(T_FFTCOPY);
 		}
-	}, "Fourier Transform");
+	});//, "Fourier Transform");
 	if (TIMERS_ENABLED == TRUE) timer_stop(T_MAX);
 }
 
@@ -621,7 +625,7 @@ static void cffts3(int is, int d[3], dcomplex x[NZ][NY][NX],dcomplex xout[NZ][NY
 	int v[d[1]];
 	std::iota(&v[0], &v[d[1]], 0);
 	
-	mystd::for_each(pstl::execution::par, &v[0], &v[d[1]], [&is, &d, &logd, &x, &xout](int j)
+	std::for_each(pstl::execution::par, &v[0], &v[d[1]], [&is, &d, &logd, &x, &xout](int j)
 	{
 		dcomplex y0[NX][FFTBLOCKPAD];
 		dcomplex y1[NX][FFTBLOCKPAD];
@@ -648,7 +652,7 @@ static void cffts3(int is, int d[3], dcomplex x[NZ][NY][NX],dcomplex xout[NZ][NY
 			}
 		//	if (TIMERS_ENABLED == TRUE) timer_stop(T_FFTCOPY);
 		}
-	}, "Fourier Transform");
+	});//, "Fourier Transform");
 	if (TIMERS_ENABLED == TRUE) timer_stop(T_MAX);
 }
 
@@ -882,7 +886,7 @@ static void checksum(int i, dcomplex u1[NZ][NY][NX]) {
 	int v[1024];
 	std::iota(&v[0], &v[1024], 1);
 	
-	chk = mystd::transform_reduce(pstl::execution::par, &v[0], &v[1024], chk, 
+	chk = std::transform_reduce(pstl::execution::par, &v[0], &v[1024], chk, 
 	[](dcomplex total_chk, dcomplex temp_chk) -> dcomplex{
 			total_chk.real += temp_chk.real;
 			total_chk.imag += temp_chk.imag;

@@ -7,6 +7,9 @@
 	Authors: M. Yarrow
 	H. Jin
 
+	STL version:
+	Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>
+	
 	CPP and OpenMP version:
 	Dalvan Griebler <dalvangriebler@gmail.com>
 	Júnior Löff <loffjh@gmail.com>
@@ -23,7 +26,7 @@
 #include "pstl/algorithm"
 #include "pstl/numeric"
 
-#include "../common/mystl.h"
+//#include "../common/mystl.h"
 
 #include <mutex>
 #include <thread>
@@ -436,7 +439,7 @@ void full_verify( void )
 	
 	/*  Confirm keys correctly sorted: count incorrectly sorted keys, if any */
 	
-	bool is_sorted = mystd::is_sorted(pstl::execution::par, &key_array[0], &key_array[NUM_KEYS]);
+	bool is_sorted = std::is_sorted(pstl::execution::par, &key_array[0], &key_array[NUM_KEYS]);
 	
 	if(!is_sorted)
 		printf( "Full_verify: number of keys out of sort: %ld\n", (long)j );
@@ -488,7 +491,7 @@ void rank( int iteration )
 	int v1[NUM_BUCKETS];
 	std::iota(&v1[0], &v1[NUM_BUCKETS], 0);
 
-	mystd::for_each(pstl::execution::par, &v[0], &v[l], [&bucket_size, &l, &shift](int j) {
+	std::for_each(pstl::execution::par, &v[0], &v[l], [&bucket_size, &l, &shift](int j) {
 		
 		for(INT_TYPE i = 0; i < NUM_BUCKETS; i++) bucket_size[j][i] = 0;
 
@@ -502,7 +505,7 @@ void rank( int iteration )
 	INT_TYPE sum[NUM_BUCKETS];
 	sum[0]=0;
 
-	mystd::for_each(pstl::execution::par, &v1[1], &v1[NUM_BUCKETS], [&bucket_ptrs, &bucket_size, &sum, &l](int i){
+	std::for_each(pstl::execution::par, &v1[1], &v1[NUM_BUCKETS], [&bucket_ptrs, &bucket_size, &sum, &l](int i){
 
 		sum[i]=0;
 
@@ -511,13 +514,13 @@ void rank( int iteration )
 
 	for(int i = 1; i < NUM_BUCKETS; i++) bucket_ptrs[0][i] = bucket_ptrs[0][i-1] + sum[i];
 
-	mystd::for_each(pstl::execution::par, &v1[0], &v1[NUM_BUCKETS], [&bucket_ptrs, &bucket_size, &l](int i){
+	std::for_each(pstl::execution::par, &v1[0], &v1[NUM_BUCKETS], [&bucket_ptrs, &bucket_size, &l](int i){
 
 		for(int k = 1; k < l; k++) bucket_ptrs[k][i] = bucket_ptrs[k-1][i] + bucket_size[k-1][i];
 	});
 	
 
-	mystd::for_each(pstl::execution::par, &v[0], &v[l], [&bucket_ptrs, &l, &shift](int j) {
+	std::for_each(pstl::execution::par, &v[0], &v[l], [&bucket_ptrs, &l, &shift](int j) {
 
 		for(INT_TYPE i = j; i < NUM_KEYS; i+=l){
 			
@@ -526,7 +529,7 @@ void rank( int iteration )
 		}
 	});
 
-	mystd::for_each(pstl::execution::par, &v1[0], &v1[NUM_BUCKETS], [&bucket_ptrs, &l, &shift](int i) {
+	std::for_each(pstl::execution::par, &v1[0], &v1[NUM_BUCKETS], [&bucket_ptrs, &l, &shift](int i) {
 		
 		INT_TYPE num_bucket_keys = (1L << shift);
 		int k1 = i * num_bucket_keys;
@@ -543,16 +546,16 @@ void rank( int iteration )
 	if(TIMER_ENABLED) timer_stop(4);
 
 #else
-	mystd::fill(pstl::execution::par, &key_buff_ptr[0], &key_buff_ptr[MAX_KEY], 0);
+	std::fill(pstl::execution::par, &key_buff_ptr[0], &key_buff_ptr[MAX_KEY], 0);
 	
 	typedef tbb::enumerable_thread_specific< std::vector<INT_TYPE> > Work_buff_type;
 	Work_buff_type work_buff2(MAX_KEY,0);
 	
-	mystd::for_each(pstl::execution::par, &key_buff_ptr2[0], &key_buff_ptr2[NUM_KEYS], [&work_buff2](INT_TYPE k) {work_buff2.local()[k]++;});
+	std::for_each(pstl::execution::par, &key_buff_ptr2[0], &key_buff_ptr2[NUM_KEYS], [&work_buff2](INT_TYPE k) {work_buff2.local()[k]++;});
 	
 	for (Work_buff_type::iterator j = work_buff2.begin(); j != work_buff2.end(); ++j) {
 		
-		mystd::transform(pstl::execution::par, &key_buff_ptr[0], &key_buff_ptr[MAX_KEY], j->begin(), &key_buff_ptr[0], std::plus<INT_TYPE>());
+		std::transform(pstl::execution::par, &key_buff_ptr[0], &key_buff_ptr[MAX_KEY], j->begin(), &key_buff_ptr[0], std::plus<INT_TYPE>());
 		
 	}
 	
@@ -753,6 +756,7 @@ int main( int argc, char **argv )
 	/*  Printout initial NPB info */
 	printf  ( "\n\n NAS Parallel Benchmarks 4.0 OpenMP C++STL version - IS Benchmark\n\n" );
 	printf("\n\n Developed by: Dalvan Griebler <dalvan.griebler@acad.pucrs.br>\n");
+	printf("\n\n STL version by: Nicco Mietzsch <nicco.mietzsch@campus.lmu.de>\n");
 	printf( " Size:  %ld  (class %c)\n", (long)TOTAL_KEYS, CLASS );
 	printf( " Iterations:  %d\n", MAX_ITERATIONS );
 	printf( " Number of available threads:  %d\n", std::thread::hardware_concurrency() );
@@ -783,7 +787,7 @@ int main( int argc, char **argv )
 	
 	if( CLASS != 'S' ) printf( "\n   iteration\n" );
 	
-	mystd::clear();
+	//std::clear();
 	/*  Start timer  */
 	timer_clear( 4 );
 	timer_start( 0 );
@@ -802,8 +806,8 @@ int main( int argc, char **argv )
 	
 	timecounter = timer_read( 0 );
 	
-	printf("\n mystl statistics:\n");
-	mystd::dump();	
+	//printf("\n mystl statistics:\n");
+	//std::dump();	
 
 	/*  This tests that keys are in sequence: sorting of last ranked key seq
 	occurs here, but is an untimed operation */

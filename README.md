@@ -1,13 +1,4 @@
-
-***********************************************************************
-A version of the NAS Parallel Benchmark Suite (NPB) using the Parallel
-STL, implemented by Nicco Mietzsch, LMU Munich, based on previous work
-by D. Griebler et al.
-***********************************************************************
-
-To use the C++NPB, adjust the config/make.def and rename the
-.cpp's. The makefile only accepts ep.cpp, mg.cpp, cg.cpp, is.cpp and
-ft.cpp.
+To use the C++NPB, adjust the config/make.def and rename the .cpp's. The makefile only accepts ep.cpp, mg.cpp, cg.cpp, is.cpp and ft.cpp.
 
 Below is the original makefile for Griebler et al.
 
